@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.widget.RemoteViews;
 
 import br.com.twoas.notexrate.R;
+import br.com.twoas.notexrate.presentation.ui.activities.MainActivity;
 import timber.log.Timber;
 
 /**
@@ -53,6 +54,7 @@ public class NotexrateWidget extends AppWidgetProvider {
         super.onReceive(context, intent);
         if (intent.getAction().startsWith(CLICK_EVENT)) {
             Timber.d("Clicou %s", intent.getExtras().getString(DATA_IDENTIFIER));
+            openActivity(context, intent.getExtras().getString(DATA_IDENTIFIER));
         }
     }
 
@@ -61,5 +63,16 @@ public class NotexrateWidget extends AppWidgetProvider {
         intent.setAction(action);
         intent.putExtra(NotexrateWidget.DATA_IDENTIFIER, identifier);
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_MUTABLE);
+    }
+
+    private static void openActivity(Context context, String identifier){
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.putExtra(NotexrateWidget.DATA_IDENTIFIER, identifier);
+//        PendingIntent notifyPendingIntent = PendingIntent.getActivity(
+//                context, 0, intent,
+//                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        context.startActivity(intent);
     }
 }
