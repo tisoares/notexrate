@@ -10,6 +10,7 @@ import br.com.twoas.notexrate.domain.executor.impl.ThreadExecutor;
 import br.com.twoas.notexrate.presentation.presenters.MainPresenter;
 import br.com.twoas.notexrate.presentation.presenters.impl.MainPresenterImpl;
 import br.com.twoas.notexrate.threading.MainThreadImpl;
+import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements MainPresenter.View {
 
@@ -21,7 +22,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
@@ -31,6 +31,11 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         if (getIntent().getExtras()!= null &&  getIntent().getExtras().containsKey(DATA_IDENTIFIER)){
             binding.label.setText(getIntent().getExtras().getString(DATA_IDENTIFIER));
         }
+        binding.label.setOnClickListener(this::onLabelClick);
+    }
+
+    public void onLabelClick(View v) {
+        Timber.d("Label Clicked");
     }
 
     @Override
