@@ -1,7 +1,7 @@
 package br.com.twoas.notexrate.network.dto.forex;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 public class QuoteDTO {
     private BigDecimal price; // Important
@@ -9,10 +9,10 @@ public class QuoteDTO {
     private BigDecimal priceDayHigh;
     private BigDecimal priceDayLow;
     private String fromCurrency;
-    private LocalDateTime timeLastTraded;
+    private Date timeLastTraded;
     private BigDecimal priceDayOpen;
     private BigDecimal pricePreviousClose;
-    private LocalDateTime datePreviousClose;
+    private Date datePreviousClose;
     private BigDecimal priceAsk;
     private BigDecimal askSize;
     private BigDecimal priceBid;
@@ -42,7 +42,7 @@ public class QuoteDTO {
     private String instrumentId; //Important
     private String symbol; // EURBRL
     private String friendlySymbol; // EUR/BRL
-    private LocalDateTime timeLastUpdated;
+    private Date timeLastUpdated;
     private String currency;
 
     //GETTERS && SETTERS
@@ -87,11 +87,11 @@ public class QuoteDTO {
         this.fromCurrency = fromCurrency;
     }
 
-    public LocalDateTime getTimeLastTraded() {
+    public Date getTimeLastTraded() {
         return timeLastTraded;
     }
 
-    public void setTimeLastTraded(LocalDateTime timeLastTraded) {
+    public void setTimeLastTraded(Date timeLastTraded) {
         this.timeLastTraded = timeLastTraded;
     }
 
@@ -111,11 +111,11 @@ public class QuoteDTO {
         this.pricePreviousClose = pricePreviousClose;
     }
 
-    public LocalDateTime getDatePreviousClose() {
+    public Date getDatePreviousClose() {
         return datePreviousClose;
     }
 
-    public void setDatePreviousClose(LocalDateTime datePreviousClose) {
+    public void setDatePreviousClose(Date datePreviousClose) {
         this.datePreviousClose = datePreviousClose;
     }
 
@@ -351,11 +351,11 @@ public class QuoteDTO {
         this.friendlySymbol = friendlySymbol;
     }
 
-    public LocalDateTime getTimeLastUpdated() {
+    public Date getTimeLastUpdated() {
         return timeLastUpdated;
     }
 
-    public void setTimeLastUpdated(LocalDateTime timeLastUpdated) {
+    public void setTimeLastUpdated(Date timeLastUpdated) {
         this.timeLastUpdated = timeLastUpdated;
     }
 

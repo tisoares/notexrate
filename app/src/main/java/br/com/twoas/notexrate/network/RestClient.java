@@ -1,8 +1,13 @@
 package br.com.twoas.notexrate.network;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter;
+
+import java.util.Date;
 
 import br.com.twoas.notexrate.BuildConfig;
+import br.com.twoas.notexrate.network.adapter.BigDecimalAdapter;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -27,10 +32,14 @@ public class RestClient {
 
 
     static {
-
         // enable logging
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.level(HttpLoggingInterceptor.Level.BODY);
+
+        Moshi moshi = new Moshi.Builder()
+                .add(new BigDecimalAdapter())
+                .add(Date.class, new Rfc3339DateJsonAdapter().nullSafe())
+                .build();
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(chain -> {
@@ -51,13 +60,13 @@ public class RestClient {
 
         s_retrofit = new Retrofit.Builder()
                 .baseUrl(REST_API_URL)
-                .addConverterFactory(MoshiConverterFactory.create())
+                .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .client(client)
                 .build();
 
         s_config_retrofit = new Retrofit.Builder()
                 .baseUrl(REST_CONFIG_API_URL)
-                .addConverterFactory(MoshiConverterFactory.create())
+                .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .client(client)
                 .build();
     }

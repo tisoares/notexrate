@@ -64,6 +64,7 @@ dependencies {
     // Moshi
     implementation 'com.squareup.moshi:moshi:1.8.0'
     implementation 'com.squareup.retrofit2:converter-moshi:2.4.0'
+    implementation 'com.squareup.moshi:moshi-adapters:1.15.0'
 
     //Timber
     implementation 'com.jakewharton.timber:timber:5.0.1'

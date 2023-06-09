@@ -5,30 +5,28 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 
-import br.com.twoas.notexrate.domain.model.User;
-import br.com.twoas.notexrate.domain.repository.UserRepository;
+import br.com.twoas.notexrate.Constants;
+import br.com.twoas.notexrate.database.converter.Converters;
+import br.com.twoas.notexrate.domain.model.CurrencyNotify;
+import br.com.twoas.notexrate.domain.repository.CurrencyNotifyRepository;
 
 /**
  * Created by TIAGO SOARES on 16/07/2019.
  */
-
-@Database(entities = {User.class}, version = 1, exportSchema = false)
+@TypeConverters(Converters.class)
+@Database(entities = {CurrencyNotify.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
-
-    private static final String DATABASE_NAME = "notexrate-database";
 
     private static AppDatabase INSTANCE;
 
-    public abstract UserRepository userRepository();
+    public abstract CurrencyNotifyRepository currencyNotifyRepository();
 
     public static AppDatabase getAppDatabase(Context context) {
         if (INSTANCE == null) {
             INSTANCE =
-                    Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, DATABASE_NAME)
-                            // allow queries on the main thread.
-                            // Don't do this on a real app! See PersistenceBasicSample for an example.
-                            // .allowMainThreadQueries()
+                    Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, Constants.DATABASE_NAME)
                             .build();
         }
         return INSTANCE;
