@@ -20,11 +20,13 @@ public interface CurrencyDetailActivityPresenter extends BasePresenter {
         void currencyCode(String code);
         void wrongCurrency();
         void saved(List<CurrencyNotify> currencyNotifies);
+        void loadQuote();
     }
 
     void setWidgetId(String widgetId);
     void saveCurrencyNotify(CurrencyNotify currencyNotify);
     void saveCurrencyNotify(String code, String from, String to, BigDecimal min, BigDecimal max);
-
     void getCurrencyCode(String from, String to);
+    void refreshQuote();
+
 }

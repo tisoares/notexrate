@@ -28,19 +28,19 @@ import br.com.twoas.notexrate.receiver.ForexAlarmReceiver;
 import br.com.twoas.notexrate.threading.MainThreadImpl;
 
 public class CurrencyDetailActivity extends AppCompatActivity implements CurrencyDetailActivityPresenter.View,
-        SettingsWidgetFragment.Listener {
+        SettingsWidgetFragment.Listener, CurrencyDetailFragment.Listener {
 
     private CurrencyViewModel mViewModel;
     private CurrencyDetailActivityPresenter mPresenter;
     private Fragment mCurrentFragment;
-    private ActivityCurrencyDetailBinding mBiding;
+    private ActivityCurrencyDetailBinding mBinding;
     private ForexAlarmReceiver mAlarme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBiding = ActivityCurrencyDetailBinding.inflate(getLayoutInflater());
-        setContentView(mBiding.getRoot());
+        mBinding = ActivityCurrencyDetailBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         mViewModel = new ViewModelProvider(this).get(CurrencyViewModel.class);
         mAlarme = new ForexAlarmReceiver();
         mPresenter = new CurrencyDetailActivityPresenterImpl(ThreadExecutor.getInstance(),
@@ -57,14 +57,14 @@ public class CurrencyDetailActivity extends AppCompatActivity implements Currenc
 
     @Override
     public void showProgress() {
-        mBiding.groupView.setVisibility(View.INVISIBLE);
-        mBiding.groupProcess.setVisibility(View.VISIBLE);
+        mBinding.groupView.setVisibility(View.INVISIBLE);
+        mBinding.groupProcess.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideProgress() {
-        mBiding.groupView.setVisibility(View.VISIBLE);
-        mBiding.groupProcess.setVisibility(View.INVISIBLE);
+        mBinding.groupView.setVisibility(View.VISIBLE);
+        mBinding.groupProcess.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -79,13 +79,13 @@ public class CurrencyDetailActivity extends AppCompatActivity implements Currenc
 
     @Override
     public void openDetailsFragment() {
-        loadFragment(CurrencyDetailFragment.newInstance());
+        loadFragment(CurrencyDetailFragment.newInstance(this));
     }
 
     private void loadFragment(Fragment fragment) {
         mCurrentFragment = fragment;
         getSupportFragmentManager().beginTransaction()
-                .replace(mBiding.container.getId(), mCurrentFragment)
+                .replace(mBinding.container.getId(), mCurrentFragment)
                 .commit();
     }
 
@@ -110,6 +110,13 @@ public class CurrencyDetailActivity extends AppCompatActivity implements Currenc
     }
 
     @Override
+    public void loadQuote() {
+        if (isDetailFragment()) {
+            ((CurrencyDetailFragment) mCurrentFragment).loadData();
+        }
+    }
+
+    @Override
     public void onSave(String code,String from, String to, BigDecimal min, BigDecimal max) {
         mPresenter.saveCurrencyNotify(code, from, to, min, max);
     }
@@ -128,5 +135,20 @@ public class CurrencyDetailActivity extends AppCompatActivity implements Currenc
 
     private boolean isSettingsFragment() {
         return mCurrentFragment != null && mCurrentFragment instanceof SettingsWidgetFragment;
+    }
+
+    private boolean isDetailFragment() {
+        return mCurrentFragment != null && mCurrentFragment instanceof CurrencyDetailFragment;
+    }
+
+    @Override
+    public void onRefresh() {
+        mAlarme.updateWidget(this);
+        mPresenter.refreshQuote();
+    }
+
+    @Override
+    public void onEdit() {
+        openSettingsFragment();
     }
 }

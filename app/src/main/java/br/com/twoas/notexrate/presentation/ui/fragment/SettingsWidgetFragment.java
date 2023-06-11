@@ -18,6 +18,7 @@ import java.util.Objects;
 
 import br.com.twoas.notexrate.databinding.FragmentSettingsWidgetBinding;
 import br.com.twoas.notexrate.presentation.ui.viewmodel.CurrencyViewModel;
+import br.com.twoas.notexrate.utils.Utils;
 
 public class SettingsWidgetFragment extends Fragment {
 
@@ -59,6 +60,18 @@ public class SettingsWidgetFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mBinding.btnSave.setOnClickListener(v -> validateCurrency());
         mBinding.lblWdgId.setText(mModel.widgetId.toString());
+        mBinding.lblWdgId.setVisibility(View.INVISIBLE);
+        loadData();
+    }
+
+    private void loadData() {
+        if (mModel.currencyNotify != null) {
+            mBinding.txtMinValue.getEditText().setText(Utils.bigDecimalToString(mModel.currencyNotify.minValueAlert));
+            mBinding.txtMaxValue.getEditText().setText(Utils.bigDecimalToString(mModel.currencyNotify.maxValueAlert));
+            String[] currencies = mModel.currencyNotify.label.split("/");
+            mBinding.txtFrom.getEditText().setText(currencies[0]);
+            mBinding.txtTo.getEditText().setText(currencies[1]);
+        }
     }
 
     @Override

@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
                 RestClient.getService(GetConfigDataService.class),
                 this);
 
-        binding.label.setOnClickListener(this::onLabelClick);
+        binding.labelFrom.setOnClickListener(this::onLabelClick);
         alarm.updateWidget(this);
         alarm.cancelAlarm(this);
         alarm.setAlarm(this);

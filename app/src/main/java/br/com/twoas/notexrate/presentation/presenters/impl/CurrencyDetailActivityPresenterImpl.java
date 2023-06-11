@@ -13,12 +13,15 @@ import br.com.twoas.notexrate.domain.executor.Executor;
 import br.com.twoas.notexrate.domain.executor.MainThread;
 import br.com.twoas.notexrate.domain.interactors.CurrencyMapInteractor;
 import br.com.twoas.notexrate.domain.interactors.GetCurrencyByWdgIdInteractor;
+import br.com.twoas.notexrate.domain.interactors.QuoteInteractor;
 import br.com.twoas.notexrate.domain.interactors.SaveCurrencyInteractor;
 import br.com.twoas.notexrate.domain.interactors.impl.CurrencyMapInteractorImpl;
 import br.com.twoas.notexrate.domain.interactors.impl.GetCurrencyByWdgIdInteractorImpl;
+import br.com.twoas.notexrate.domain.interactors.impl.QuoteInteractorImpl;
 import br.com.twoas.notexrate.domain.interactors.impl.SaveCurrencyInteractorImpl;
 import br.com.twoas.notexrate.domain.model.CurrencyNotify;
 import br.com.twoas.notexrate.network.dto.forex.IdMapDTO;
+import br.com.twoas.notexrate.network.dto.forex.QuoteDTO;
 import br.com.twoas.notexrate.network.services.GetConfigDataService;
 import br.com.twoas.notexrate.network.services.GetForexDataService;
 import br.com.twoas.notexrate.presentation.presenters.CurrencyDetailActivityPresenter;
@@ -31,7 +34,7 @@ import br.com.twoas.notexrate.presentation.ui.viewmodel.CurrencyViewModel;
  * Email: tisoares@outlook.com
  */
 public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter implements CurrencyDetailActivityPresenter,
-        GetCurrencyByWdgIdInteractor.Callback, CurrencyMapInteractor.Callback{
+        GetCurrencyByWdgIdInteractor.Callback, CurrencyMapInteractor.Callback, QuoteInteractor.Callback {
 
     private final CurrencyViewModel mViewModel;
     private final View mView;
@@ -132,6 +135,18 @@ public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter 
     }
 
     @Override
+    public void refreshQuote() {
+        mView.showProgress();
+        new QuoteInteractorImpl(mExecutor,
+                mMainThread,
+                mConfigService,
+                this,
+                mServiceForex,
+                Collections.singletonList(mViewModel.currencyNotify.code))
+                .execute();
+    }
+
+    @Override
     public void onError(String message) {
         mView.showError(message);
     }
@@ -178,5 +193,20 @@ public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter 
     public void onWrongData(String message) {
         mView.hideProgress();
         mView.wrongCurrency();
+    }
+
+    @Override
+    public void onQuoteSuccess(List<QuoteDTO> quotes) {
+        mView.hideProgress();
+        if (!quotes.isEmpty()) {
+            mViewModel.quote = quotes.get(0);
+            mView.loadQuote();
+        }
+    }
+
+    @Override
+    public void onQuoteFail(String error) {
+        mView.hideProgress();
+        mView.showError(error);
     }
 }
