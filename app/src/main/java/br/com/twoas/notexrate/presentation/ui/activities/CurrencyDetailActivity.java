@@ -106,7 +106,7 @@ public class CurrencyDetailActivity extends AppCompatActivity implements Currenc
     @Override
     public void saved(List<CurrencyNotify> currencyNotifies) {
         mAlarme.processQuotes(this);
-        finish();
+        openDetailsFragment();
     }
 
     @Override
