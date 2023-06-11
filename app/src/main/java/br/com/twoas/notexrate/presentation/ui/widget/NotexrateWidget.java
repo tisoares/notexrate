@@ -7,9 +7,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
 import br.com.twoas.notexrate.Constants;
 import br.com.twoas.notexrate.R;
-import br.com.twoas.notexrate.presentation.ui.activities.MainActivity;
+import br.com.twoas.notexrate.database.AppDatabase;
+import br.com.twoas.notexrate.domain.model.CurrencyNotify;
+import br.com.twoas.notexrate.domain.repository.CurrencyNotifyRepository;
+import br.com.twoas.notexrate.presentation.model.WidgetData;
+import br.com.twoas.notexrate.presentation.ui.activities.CurrencyDetailActivity;
+import br.com.twoas.notexrate.utils.JsonUtils;
 import timber.log.Timber;
 
 /**
@@ -17,20 +26,36 @@ import timber.log.Timber;
  */
 public class NotexrateWidget extends AppWidgetProvider {
 
-
-    private String value = "5,13245";
-
-    private void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int appWidgetId) {
-
+    private static List<WidgetData> mData;
+    private void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+//        CurrencyNotifyRepository repository = AppDatabase.getAppDatabase(context.getApplicationContext()).currencyNotifyRepository();
+//        CurrencyNotify currencyNotify = repository.findByWdgId(appWidgetId);
+        Optional<WidgetData> wdg = getWidgetData(appWidgetId);
         Timber.d("Widget id: %d", appWidgetId);
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.notexrate_widget);
-        views.setTextViewText(R.id.amount, value );
+        if (wdg.isPresent()) {
+            views.setTextViewText(R.id.amount, wdg.get().getPrice().toString());
+            views.setTextViewText(R.id.currency, wdg.get().getLabel());
+//            views.setImageViewResource(R.id.indicator, );
+        } else {
+            views.setTextViewText(R.id.amount, "0.00000");
+            views.setTextViewText(R.id.currency, "UNDEFINED");
+        }
+
         views.setOnClickPendingIntent(R.id.wdg,
                 getPendingSelfIntent(context, Constants.CLICK_EVENT+appWidgetId, ""+appWidgetId));
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
+    }
+
+    private Optional<WidgetData> getWidgetData(int appWidgetId) {
+        if (mData == null) {
+            return Optional.empty();
+        }
+        return mData.stream()
+                .filter(w -> w.getWdgId().equals(appWidgetId))
+                .findFirst();
     }
 
     @Override
@@ -54,11 +79,15 @@ public class NotexrateWidget extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().startsWith(Constants.CLICK_EVENT)) {
-            Timber.d("Clicou %s", intent.getExtras().getString(Constants.DATA_IDENTIFIER));
             openActivity(context, intent.getExtras().getString(Constants.DATA_IDENTIFIER));
         }
-        if(intent.getStringExtra("price") != null) {
-            value = intent.getStringExtra("price");
+        if(intent.getStringExtra(Constants.WDG_DATA) != null) {
+            try {
+                String json = intent.getStringExtra(Constants.WDG_DATA);
+                mData = JsonUtils.fromList(WidgetData.class, json);
+            } catch (IOException e) {
+                Timber.e(e);
+            }
         }
         super.onReceive(context, intent);
     }
@@ -71,7 +100,7 @@ public class NotexrateWidget extends AppWidgetProvider {
     }
 
     private static void openActivity(Context context, String identifier){
-        Intent intent = new Intent(context, MainActivity.class);
+        Intent intent = new Intent(context, CurrencyDetailActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra(Constants.DATA_IDENTIFIER, identifier);

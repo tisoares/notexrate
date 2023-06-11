@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Internet Permission -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -20,10 +19,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="s">
+        <activity
+            android:name=".presentation.ui.activities.CurrencyDetailActivity"
+            android:exported="false" />
+
         <receiver
-            android:name=".receiver.AlarmReceiver"
+            android:name=".receiver.ForexAlarmReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true" />
         <receiver
             android:name=".receiver.BootReceiver"
             android:enabled="true"
@@ -32,7 +35,6 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".presentation.ui.widget.NotexrateWidget"
             android:exported="false">

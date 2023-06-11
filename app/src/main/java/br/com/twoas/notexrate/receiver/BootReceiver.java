@@ -13,7 +13,7 @@ import android.content.Intent;
  */
 public class BootReceiver extends BroadcastReceiver {
 
-    private AlarmReceiver alarm = new AlarmReceiver();
+    private ForexAlarmReceiver alarm = new ForexAlarmReceiver();
 
     @Override
     public void onReceive(Context context, Intent intent) {

@@ -3,6 +3,7 @@ package br.com.twoas.notexrate.domain.repository;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public interface CurrencyNotifyRepository {
     @Query("SELECT code FROM currency_notify")
     List<String> getAllCodes();
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(CurrencyNotify... currencyNotifies);
 
     @Delete

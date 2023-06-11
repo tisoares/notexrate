@@ -2,20 +2,22 @@ package br.com.twoas.notexrate.presentation.presenters.impl;
 
 import br.com.twoas.notexrate.domain.executor.Executor;
 import br.com.twoas.notexrate.domain.executor.MainThread;
+import br.com.twoas.notexrate.network.services.GetConfigDataService;
 import br.com.twoas.notexrate.presentation.presenters.MainPresenter;
-import br.com.twoas.notexrate.presentation.presenters.base.AbstractPresenter;
+import br.com.twoas.notexrate.presentation.presenters.base.AbstractForexPresenter;
 
 /**
  * Created by dmilicic on 12/13/15.
  */
-public class MainPresenterImpl extends AbstractPresenter implements MainPresenter {
+public class MainPresenterImpl extends AbstractForexPresenter implements MainPresenter {
 
     private MainPresenter.View mView;
 
     public MainPresenterImpl(Executor executor,
                              MainThread mainThread,
+                             GetConfigDataService configService,
                              View view) {
-        super(executor, mainThread);
+        super(executor, mainThread, configService);
         mView = view;
     }
 
@@ -48,4 +50,5 @@ public class MainPresenterImpl extends AbstractPresenter implements MainPresente
     public void getConfig() {
 
     }
+
 }

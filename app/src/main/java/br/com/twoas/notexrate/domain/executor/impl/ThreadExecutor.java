@@ -21,9 +21,9 @@ public class ThreadExecutor implements Executor {
     private static final int                     MAX_POOL_SIZE   = 5;
     private static final int                     KEEP_ALIVE_TIME = 120;
     private static final TimeUnit                TIME_UNIT       = TimeUnit.SECONDS;
-    private static final BlockingQueue<Runnable> WORK_QUEUE      = new LinkedBlockingQueue<Runnable>();
+    private static final BlockingQueue<Runnable> WORK_QUEUE      = new LinkedBlockingQueue<>();
 
-    private ThreadPoolExecutor mThreadPoolExecutor;
+    protected ThreadPoolExecutor mThreadPoolExecutor;
 
     private ThreadExecutor() {
         long keepAlive = KEEP_ALIVE_TIME;
@@ -37,15 +37,12 @@ public class ThreadExecutor implements Executor {
 
     @Override
     public void execute(final AbstractInteractor interactor) {
-        mThreadPoolExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                // run the main logic
-                interactor.run();
+        mThreadPoolExecutor.submit(() -> {
+            // run the main logic
+            interactor.run();
 
-                // mark it as finished
-                interactor.onFinished();
-            }
+            // mark it as finished
+            interactor.onFinished();
         });
     }
 

@@ -3,6 +3,7 @@ package br.com.twoas.notexrate.database.converter;
 import androidx.room.TypeConverter;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 
 /**
@@ -11,9 +12,12 @@ import java.util.Date;
  * Email: tisoares@outlook.com
  */
 public class Converters {
+
+    private static final int DEFAULT_DIVIDE = 10000;
+
     @TypeConverter
     public BigDecimal fromLong(Long value) {
-        return value == null ? null : new BigDecimal(value).divide(new BigDecimal(100));
+        return value == null ? null : new BigDecimal(value).divide(new BigDecimal(DEFAULT_DIVIDE));
     }
 
     @TypeConverter
@@ -21,7 +25,7 @@ public class Converters {
         if (bigDecimal == null) {
             return null;
         } else {
-            return bigDecimal.multiply(new BigDecimal(100)).longValue();
+            return bigDecimal.multiply(new BigDecimal(DEFAULT_DIVIDE)).longValue();
         }
     }
 

@@ -14,9 +14,12 @@ public interface GetForexDataService {
     @GET("/service/Finance/Quotes?ocid=finance-utils-peregrine&cm=pt-br&it=web&wrapodata=false")
     Call<List<QuoteDTO>> getQuotes(@Query("apikey") String apikey,
                                   @Query("activityId") String activityId,
-                                  @Query(value = "ids", encoded = true) List<String> ids);
-
-    @GET("/service/Finance/Quotes?ocid=finance-utils-peregrine&cm=pt-br&it=web")
+                                  @Query(value = "ids", encoded = true) String ids);
+    @GET("/service/Finance/Quotes?ocid=finance-utils-peregrine&cm=pt-br&it=web&wrapodata=false")
+    Call<List<List<QuoteDTO>>> getQuotesMulti(@Query("apikey") String apikey,
+                                   @Query("activityId") String activityId,
+                                   @Query(value = "ids", encoded = true) List<String> ids);
+    @GET("/service/Finance/IdMap?ocid=finance-utils-peregrine&cm=pt-br&it=web")
     Call<List<IdMapDTO>> getCurrenciesCodes(@Query("apikey") String apikey,
                                             @Query("activityId") String activityId,
                                             @Query(value = "MStarIds", encoded = true) List<String> MStarIds);
