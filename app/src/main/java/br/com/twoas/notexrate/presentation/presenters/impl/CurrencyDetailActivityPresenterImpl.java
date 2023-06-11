@@ -53,6 +53,26 @@ public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter 
     }
 
     @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void stop() {
+
+    }
+
+    @Override
+    public void destroy() {
+
+    }
+
+    @Override
     public void setWidgetId(String widgetId) {
         try {
             mViewModel.widgetId = Integer.valueOf(widgetId);
@@ -71,10 +91,12 @@ public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter 
         SaveCurrencyInteractor interactor = new SaveCurrencyInteractorImpl(
                 mExecutor,
                 mMainThread,
-                (CurrencyNotify... currencyNotifies) ->
-                        mView.saved(Arrays
-                                .stream(currencyNotifies)
-                                .collect(Collectors.toList())),
+                (CurrencyNotify... currencyNotifies) -> {
+                    mView.hideProgress();
+                    mView.saved(Arrays
+                            .stream(currencyNotifies)
+                            .collect(Collectors.toList()));
+                },
                 mDataBase.currencyNotifyRepository(),
                 currencyNotify
         );
@@ -98,6 +120,7 @@ public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter 
 
     @Override
     public void getCurrencyCode(String from, String to) {
+        mView.showProgress();
         CurrencyMapInteractor interactor = new CurrencyMapInteractorImpl(
                 mExecutor,
                 mMainThread,
@@ -109,31 +132,12 @@ public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter 
     }
 
     @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void stop() {
-
-    }
-
-    @Override
-    public void destroy() {
-
-    }
-
-    @Override
     public void onError(String message) {
         mView.showError(message);
     }
 
     private void findCurrencyByWgdId(int id) {
+        mView.showProgress();
         GetCurrencyByWdgIdInteractor interactor = new GetCurrencyByWdgIdInteractorImpl(
                 mExecutor,
                 mMainThread,
@@ -145,6 +149,7 @@ public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter 
 
     @Override
     public void onSuccess(CurrencyNotify currencyNotify) {
+        mView.hideProgress();
         mViewModel.currencyNotify = currencyNotify;
         if (currencyNotify == null) {
             mView.openSettingsFragment();
@@ -155,6 +160,7 @@ public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter 
 
     @Override
     public void onSuccess(List<IdMapDTO> idMaps) {
+        mView.hideProgress();
         if (!idMaps.isEmpty()) {
             mView.currencyCode(idMaps.get(0).getExternalCode());
         } else {
@@ -164,11 +170,13 @@ public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter 
 
     @Override
     public void onFail(String message) {
+        mView.hideProgress();
         mView.showError(message);
     }
 
     @Override
     public void onWrongData(String message) {
+        mView.hideProgress();
         mView.wrongCurrency();
     }
 }

@@ -92,7 +92,7 @@ public class ForexAlarmReceiver extends BroadcastReceiver {
         return new WidgetData(currency.wdgId,
                 currency.label,
                 currency.lastPrice,
-                BigDecimal.ZERO.compareTo(currency.lastPriceChange) <= 0,
+                BigDecimal.ZERO.compareTo(currency.lastPriceChange) >= 0,
                 false); // TODO: Sinalize alert
     }
 }

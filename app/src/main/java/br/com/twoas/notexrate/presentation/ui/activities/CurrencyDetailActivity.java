@@ -1,20 +1,19 @@
 package br.com.twoas.notexrate.presentation.ui.activities;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import java.math.BigDecimal;
 import java.util.List;
 
 import br.com.twoas.notexrate.Constants;
-import br.com.twoas.notexrate.R;
 import br.com.twoas.notexrate.database.AppDatabase;
+import br.com.twoas.notexrate.databinding.ActivityCurrencyDetailBinding;
 import br.com.twoas.notexrate.domain.executor.impl.ThreadExecutor;
 import br.com.twoas.notexrate.domain.model.CurrencyNotify;
 import br.com.twoas.notexrate.network.RestClient;
@@ -34,12 +33,14 @@ public class CurrencyDetailActivity extends AppCompatActivity implements Currenc
     private CurrencyViewModel mViewModel;
     private CurrencyDetailActivityPresenter mPresenter;
     private Fragment mCurrentFragment;
+    private ActivityCurrencyDetailBinding mBiding;
     private ForexAlarmReceiver mAlarme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_currency_detail);
+        mBiding = ActivityCurrencyDetailBinding.inflate(getLayoutInflater());
+        setContentView(mBiding.getRoot());
         mViewModel = new ViewModelProvider(this).get(CurrencyViewModel.class);
         mAlarme = new ForexAlarmReceiver();
         mPresenter = new CurrencyDetailActivityPresenterImpl(ThreadExecutor.getInstance(),
@@ -49,7 +50,6 @@ public class CurrencyDetailActivity extends AppCompatActivity implements Currenc
 
         if (savedInstanceState == null) {
             if (getIntent().getExtras()!= null &&  getIntent().getExtras().containsKey(Constants.DATA_IDENTIFIER)){
-                Toast.makeText(this, getIntent().getExtras().getString(Constants.DATA_IDENTIFIER), Toast.LENGTH_SHORT).show();
                mPresenter.setWidgetId(getIntent().getExtras().getString(Constants.DATA_IDENTIFIER));
             }
         }
@@ -57,12 +57,14 @@ public class CurrencyDetailActivity extends AppCompatActivity implements Currenc
 
     @Override
     public void showProgress() {
-
+        mBiding.groupView.setVisibility(View.INVISIBLE);
+        mBiding.groupProcess.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideProgress() {
-
+        mBiding.groupView.setVisibility(View.VISIBLE);
+        mBiding.groupProcess.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -83,7 +85,7 @@ public class CurrencyDetailActivity extends AppCompatActivity implements Currenc
     private void loadFragment(Fragment fragment) {
         mCurrentFragment = fragment;
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, mCurrentFragment)
+                .replace(mBiding.container.getId(), mCurrentFragment)
                 .commit();
     }
 

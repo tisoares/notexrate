@@ -18,6 +18,7 @@ import br.com.twoas.notexrate.domain.model.CurrencyNotify;
 import br.com.twoas.notexrate.domain.repository.CurrencyNotifyRepository;
 import br.com.twoas.notexrate.presentation.model.WidgetData;
 import br.com.twoas.notexrate.presentation.ui.activities.CurrencyDetailActivity;
+import br.com.twoas.notexrate.receiver.ForexAlarmReceiver;
 import br.com.twoas.notexrate.utils.JsonUtils;
 import timber.log.Timber;
 
@@ -28,8 +29,6 @@ public class NotexrateWidget extends AppWidgetProvider {
 
     private static List<WidgetData> mData;
     private void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-//        CurrencyNotifyRepository repository = AppDatabase.getAppDatabase(context.getApplicationContext()).currencyNotifyRepository();
-//        CurrencyNotify currencyNotify = repository.findByWdgId(appWidgetId);
         Optional<WidgetData> wdg = getWidgetData(appWidgetId);
         Timber.d("Widget id: %d", appWidgetId);
         // Construct the RemoteViews object
@@ -37,7 +36,11 @@ public class NotexrateWidget extends AppWidgetProvider {
         if (wdg.isPresent()) {
             views.setTextViewText(R.id.amount, wdg.get().getPrice().toString());
             views.setTextViewText(R.id.currency, wdg.get().getLabel());
-//            views.setImageViewResource(R.id.indicator, );
+            if (wdg.get().isDown()){
+                views.setImageViewResource(R.id.indicator, R.drawable.ic_arrow_drop_down);
+            } else {
+                views.setImageViewResource(R.id.indicator, R.drawable.ic_arrow_drop_up);
+            }
         } else {
             views.setTextViewText(R.id.amount, "0.00000");
             views.setTextViewText(R.id.currency, "UNDEFINED");
@@ -68,12 +71,12 @@ public class NotexrateWidget extends AppWidgetProvider {
 
     @Override
     public void onEnabled(Context context) {
-        // Enter relevant functionality for when the first widget is created
+        new ForexAlarmReceiver().setAlarm(context);
     }
 
     @Override
     public void onDisabled(Context context) {
-        // Enter relevant functionality for when the last widget is disabled
+        new ForexAlarmReceiver().setAlarm(context);
     }
 
     @Override
