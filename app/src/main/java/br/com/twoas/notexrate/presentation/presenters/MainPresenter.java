@@ -7,9 +7,7 @@ import br.com.twoas.notexrate.presentation.ui.BaseView;
 public interface MainPresenter extends BasePresenter {
 
     interface View extends BaseView {
-
+        void showData();
     }
-
-    void getConfig();
-
+    void loadData();
 }

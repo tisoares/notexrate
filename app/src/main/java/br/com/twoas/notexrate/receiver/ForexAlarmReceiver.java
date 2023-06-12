@@ -48,13 +48,16 @@ public class ForexAlarmReceiver extends BroadcastReceiver {
     public void updateWidget(Context context, List<WidgetData> data) {
         Intent intentWdg = new Intent(context, NotexrateWidget.class);
         intentWdg.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        int[] ids = AppWidgetManager.getInstance(context.getApplicationContext())
-                .getAppWidgetIds(new ComponentName(context.getApplicationContext(), NotexrateWidget.class));
+        int[] ids = getWidgetIds(context);
         intentWdg.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         intentWdg.putExtra(Constants.WDG_DATA, JsonUtils.toJsonList(WidgetData.class, data));
         context.sendBroadcast(intentWdg);
     }
 
+    public int[] getWidgetIds(Context context) {
+        return AppWidgetManager.getInstance(context.getApplicationContext())
+                .getAppWidgetIds(new ComponentName(context.getApplicationContext(), NotexrateWidget.class));
+    }
     public void setAlarm(Context context) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(context, ForexAlarmReceiver.class);
