@@ -8,11 +8,13 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Objects;
 
 import br.com.twoas.notexrate.R;
 import br.com.twoas.notexrate.databinding.FragmentCurrencyDetailBinding;
@@ -71,19 +73,23 @@ public class CurrencyDetailFragment extends Fragment {
             mBinding.price.setText(Utils.bigDecimalToString(quote.getPrice()));
             if (BigDecimal.ZERO.compareTo(quote.getPriceChange()) >= 0) {
                 mBinding.imgIndicator.setImageResource(R.drawable.ic_arrow_drop_down);
+                mBinding.priceChange.setTextColor(ContextCompat.getColor(requireContext(),R.color.green));
+                mBinding.lblPercentage.setTextColor(ContextCompat.getColor(requireContext(),R.color.green));
             } else {
                 mBinding.imgIndicator.setImageResource(R.drawable.ic_arrow_drop_up);
+                mBinding.priceChange.setTextColor(ContextCompat.getColor(requireContext(),R.color.red));
+                mBinding.lblPercentage.setTextColor(ContextCompat.getColor(requireContext(),R.color.red));
             }
             mBinding.lblUpdatedAt.setText(Utils.formatDate(quote.getTimeLastUpdated()));
             mBinding.priceChange.setText(Utils.bigDecimalToString(quote.getPriceChange()));
-            mBinding.lblPercentage.setText(Utils.bigDecimalToString(quote.getPriceChangePercent()
-                    .setScale(2, RoundingMode.HALF_UP)) + "%");
+            mBinding.lblPercentage.setText("("+Utils.bigDecimalToString(quote.getPriceChangePercent()
+                    .setScale(2, RoundingMode.HALF_UP)) + "%)");
             mBinding.priceChange2.setText(Utils.bigDecimalToString(quote.getPriceChange()));
             mBinding.lblPriceChangePercent.setText(Utils.bigDecimalToString(quote.getPriceChangePercent()));
             mBinding.lastClose.setText(Utils.bigDecimalToString(quote.getPricePreviousClose()));
             mBinding.lastOpen.setText(Utils.bigDecimalToString(quote.getPriceDayOpen()));
-            mBinding.minPrice.setText(Utils.bigDecimalToString(quote.getPriceDayHigh()));
-            mBinding.maxPrice.setText(Utils.bigDecimalToString(quote.getPriceDayLow()));
+            mBinding.minPrice.setText(Utils.bigDecimalToString(quote.getPriceDayLow()));
+            mBinding.maxPrice.setText(Utils.bigDecimalToString(quote.getPriceDayHigh()));
             mBinding.lblAsk.setText(Utils.bigDecimalToString(quote.getPriceAsk()));
             mBinding.lblBid.setText(Utils.bigDecimalToString(quote.getPriceBid()));
             mBinding.lblLastClose.setText(Utils.formatDate(quote.getDatePreviousClose()));

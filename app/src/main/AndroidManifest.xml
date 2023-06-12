@@ -21,7 +21,8 @@
         tools:targetApi="s">
         <activity
             android:name=".presentation.ui.activities.CurrencyDetailActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <receiver
             android:name=".receiver.ForexAlarmReceiver"

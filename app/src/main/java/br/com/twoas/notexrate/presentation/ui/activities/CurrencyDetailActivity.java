@@ -143,7 +143,7 @@ public class CurrencyDetailActivity extends AppCompatActivity implements Currenc
 
     @Override
     public void onRefresh() {
-        mAlarme.updateWidget(this);
+        mAlarme.processQuotes(this);
         mPresenter.refreshQuote();
     }
 
