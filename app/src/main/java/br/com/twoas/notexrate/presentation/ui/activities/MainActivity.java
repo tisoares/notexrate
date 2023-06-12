@@ -1,5 +1,6 @@
 package br.com.twoas.notexrate.presentation.ui.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import br.com.twoas.notexrate.database.AppDatabase;
 import br.com.twoas.notexrate.databinding.ActivityMainBinding;
 import br.com.twoas.notexrate.domain.executor.impl.ThreadExecutor;
+import br.com.twoas.notexrate.domain.model.CurrencyNotify;
 import br.com.twoas.notexrate.network.RestClient;
 import br.com.twoas.notexrate.network.services.GetConfigDataService;
 import br.com.twoas.notexrate.presentation.presenters.MainPresenter;
@@ -20,9 +22,8 @@ import br.com.twoas.notexrate.presentation.ui.recycleview.adapter.CurrencyAdapte
 import br.com.twoas.notexrate.presentation.ui.viewmodel.MainViewModel;
 import br.com.twoas.notexrate.receiver.ForexAlarmReceiver;
 import br.com.twoas.notexrate.threading.MainThreadImpl;
-import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity implements MainPresenter.View {
+public class MainActivity extends AppCompatActivity implements MainPresenter.View, CurrencyAdapter.ItemClickListener {
 
     private MainViewModel mViewModel;
     private ActivityMainBinding mBinding;
@@ -61,12 +62,12 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     private void fillRecycleView() {
         RecyclerView recyclerView = mBinding.listCurrencies;
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new CurrencyAdapter(mViewModel.currencies);
+        mAdapter = new CurrencyAdapter(mViewModel.currencies, this);
         recyclerView.setAdapter(mAdapter);
     }
 
     public void onAddClick(View v) {
-        Timber.d("Label Clicked");
+        openCurrencyDetail();
     }
 
     @Override
@@ -89,6 +90,14 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     @Override
     public void showData() {
         mAdapter.updateData(mViewModel.currencies);
+    }
 
+    @Override
+    public void onItemClick(View view, CurrencyNotify item) {
+        openCurrencyDetail();
+    }
+
+    private void openCurrencyDetail() {
+        startActivity(new Intent(this, CurrencyDetailActivity.class));
     }
 }

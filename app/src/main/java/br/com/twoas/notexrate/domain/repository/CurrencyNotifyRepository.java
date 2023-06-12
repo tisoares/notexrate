@@ -21,14 +21,11 @@ public interface CurrencyNotifyRepository {
     @Query("SELECT * FROM currency_notify")
     List<CurrencyNotify> getAll();
 
-    @Query("SELECT * FROM currency_notify WHERE wdg_id IN (:wdgIds)")
-    List<CurrencyNotify> loadAllByWdgIds(int[] wdgIds);
+    @Query("SELECT * FROM currency_notify WHERE wdg_id NOT IN (:wdgIds) AND wdg_id IS NOT NULL")
+    List<CurrencyNotify> findAllByDeletedWdgIds(int[] wdgIds);
 
     @Query("SELECT * FROM currency_notify WHERE code = :code")
     List<CurrencyNotify> findByCode(String code);
-
-    @Query("SELECT * FROM currency_notify WHERE label = :label")
-    List<CurrencyNotify> findByLabel(String label);
 
     @Query("SELECT * FROM currency_notify WHERE wdg_id = :wdgId LIMIT 1")
     CurrencyNotify findByWdgId(int wdgId);

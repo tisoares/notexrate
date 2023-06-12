@@ -16,7 +16,7 @@ import br.com.twoas.notexrate.presentation.ui.viewmodel.MainViewModel;
 
 public class MainPresenterImpl extends AbstractForexPresenter implements MainPresenter, GetAllCurrenciesInteractor.Callback {
 
-    private MainPresenter.View mView;
+    private final MainPresenter.View mView;
     private final MainViewModel mViewModel;
     private final CurrencyNotifyRepository mRepository;
 

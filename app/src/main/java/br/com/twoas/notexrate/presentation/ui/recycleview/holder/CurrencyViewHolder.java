@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import br.com.twoas.notexrate.R;
 import br.com.twoas.notexrate.databinding.CurrencyItemBinding;
 import br.com.twoas.notexrate.domain.model.CurrencyNotify;
+import br.com.twoas.notexrate.presentation.ui.recycleview.adapter.CurrencyAdapter;
 import br.com.twoas.notexrate.utils.Utils;
 
 /**
@@ -20,18 +21,16 @@ import br.com.twoas.notexrate.utils.Utils;
  */
 public class CurrencyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    private final View mView;
     private final CurrencyItemBinding mBinder;
     public CurrencyNotify mItemData;
 
     public CurrencyViewHolder(@NonNull View itemView, CurrencyItemBinding viewBinder) {
         super(itemView);
         mBinder = viewBinder;
-        mView = itemView;
         mBinder.currecyCard.setOnClickListener(this);
     }
 
-    public void loadData(CurrencyNotify itemData) {
+    public void loadData(CurrencyNotify itemData, final CurrencyAdapter.ItemClickListener listener) {
         mItemData = itemData;
         String[] currencies = mItemData.label.split("/");
         setText(mBinder.price, mItemData.lastPrice);
@@ -44,6 +43,7 @@ public class CurrencyViewHolder extends RecyclerView.ViewHolder implements View.
         }
         setText(mBinder.lblUpdatedAt, Utils.formatDate(mItemData.lastUpdate));
         setText(mBinder.priceChange, mItemData.lastPriceChange);
+        mBinder.currecyCard.setOnClickListener( v -> listener.onItemClick(v, mItemData));
     }
 
     private void setText(TextView view, String value){

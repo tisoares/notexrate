@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import br.com.twoas.notexrate.Constants;
 import br.com.twoas.notexrate.database.AppDatabase;
 import br.com.twoas.notexrate.domain.executor.impl.ThreadExecutor;
+import br.com.twoas.notexrate.domain.interactors.impl.DeleteWidgetRemovedInteractorImpl;
 import br.com.twoas.notexrate.domain.interactors.impl.ProcessQuotesInteractorImpl;
 import br.com.twoas.notexrate.domain.model.CurrencyNotify;
 import br.com.twoas.notexrate.network.RestClient;
@@ -32,6 +33,7 @@ public class ForexAlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        deleteRemovedWdg(context);
         processQuotes(context);
     }
 
@@ -58,6 +60,7 @@ public class ForexAlarmReceiver extends BroadcastReceiver {
         return AppWidgetManager.getInstance(context.getApplicationContext())
                 .getAppWidgetIds(new ComponentName(context.getApplicationContext(), NotexrateWidget.class));
     }
+
     public void setAlarm(Context context) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(context, ForexAlarmReceiver.class);
@@ -97,5 +100,14 @@ public class ForexAlarmReceiver extends BroadcastReceiver {
                 currency.lastPrice,
                 BigDecimal.ZERO.compareTo(currency.lastPriceChange) >= 0,
                 false); // TODO: Sinalize alert
+    }
+
+    public void deleteRemovedWdg(Context context) {
+        new DeleteWidgetRemovedInteractorImpl(ThreadExecutor.getInstance(),
+                MainThreadImpl.getInstance(),
+                () -> {},
+                AppDatabase.getAppDatabase(context).currencyNotifyRepository(),
+                getWidgetIds(context)
+                ).execute();
     }
 }
