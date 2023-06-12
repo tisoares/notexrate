@@ -49,8 +49,12 @@ public class CurrencyDetailActivity extends AppCompatActivity implements Currenc
                 RestClient.getService(GetForexDataService.class));
 
         if (savedInstanceState == null) {
-            if (getIntent().getExtras()!= null &&  getIntent().getExtras().containsKey(Constants.DATA_IDENTIFIER)){
-               mPresenter.setWidgetId(getIntent().getExtras().getString(Constants.DATA_IDENTIFIER));
+            if (getIntent().getExtras() != null) {
+                if (getIntent().getExtras().containsKey(Constants.WDG_IDENTIFIER)) {
+                    mPresenter.setWidgetId(getIntent().getExtras().getString(Constants.WDG_IDENTIFIER));
+                } else if (getIntent().getExtras().containsKey(Constants.CURRENCY_IDENTIFIER)) {
+                    mPresenter.setCurrencyId(getIntent().getExtras().getString(Constants.CURRENCY_IDENTIFIER));
+                }
             }
         }
     }
@@ -106,7 +110,10 @@ public class CurrencyDetailActivity extends AppCompatActivity implements Currenc
     @Override
     public void saved(List<CurrencyNotify> currencyNotifies) {
         mAlarme.processQuotes(this);
-        openDetailsFragment();
+        if (!currencyNotifies.isEmpty()) {
+            mViewModel.currencyNotify = currencyNotifies.get(0);
+            openDetailsFragment();
+        }
     }
 
     @Override

@@ -8,6 +8,7 @@ import br.com.twoas.notexrate.domain.interactors.DeleteWidgetRemovedInteractor;
 import br.com.twoas.notexrate.domain.interactors.base.AbstractInteractor;
 import br.com.twoas.notexrate.domain.model.CurrencyNotify;
 import br.com.twoas.notexrate.domain.repository.CurrencyNotifyRepository;
+import timber.log.Timber;
 
 /**
  * Created by tiSoares on 12/06/2023.
@@ -33,10 +34,15 @@ public class DeleteWidgetRemovedInteractorImpl extends AbstractInteractor implem
 
     @Override
     public void run() {
-        List<CurrencyNotify> currencies = mRepository.findAllByDeletedWdgIds(mWdgIds);
-        for (CurrencyNotify currency : currencies) {
-            mRepository.delete(currency);
+        try {
+            List<CurrencyNotify> currencies = mRepository.findAllByDeletedWdgIds(mWdgIds);
+            for (CurrencyNotify currency : currencies) {
+                mRepository.delete(currency);
+            }
+            mCallback.onDeleteSuccess();
+        } catch (Exception e) {
+            Timber.e(e);
+            mCallback.onDeleteSuccess();
         }
-        mCallback.onDeleteSuccess();
     }
 }

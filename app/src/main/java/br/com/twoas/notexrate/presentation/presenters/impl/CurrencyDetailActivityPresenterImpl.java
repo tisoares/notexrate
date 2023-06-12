@@ -12,10 +12,12 @@ import br.com.twoas.notexrate.database.AppDatabase;
 import br.com.twoas.notexrate.domain.executor.Executor;
 import br.com.twoas.notexrate.domain.executor.MainThread;
 import br.com.twoas.notexrate.domain.interactors.CurrencyMapInteractor;
+import br.com.twoas.notexrate.domain.interactors.GetCurrencyByIdInteractor;
 import br.com.twoas.notexrate.domain.interactors.GetCurrencyByWdgIdInteractor;
 import br.com.twoas.notexrate.domain.interactors.QuoteInteractor;
 import br.com.twoas.notexrate.domain.interactors.SaveCurrencyInteractor;
 import br.com.twoas.notexrate.domain.interactors.impl.CurrencyMapInteractorImpl;
+import br.com.twoas.notexrate.domain.interactors.impl.GetCurrencyByIdInteractorImpl;
 import br.com.twoas.notexrate.domain.interactors.impl.GetCurrencyByWdgIdInteractorImpl;
 import br.com.twoas.notexrate.domain.interactors.impl.QuoteInteractorImpl;
 import br.com.twoas.notexrate.domain.interactors.impl.SaveCurrencyInteractorImpl;
@@ -34,7 +36,8 @@ import br.com.twoas.notexrate.presentation.ui.viewmodel.CurrencyViewModel;
  * Email: tisoares@outlook.com
  */
 public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter implements CurrencyDetailActivityPresenter,
-        GetCurrencyByWdgIdInteractor.Callback, CurrencyMapInteractor.Callback, QuoteInteractor.Callback {
+        GetCurrencyByWdgIdInteractor.Callback, CurrencyMapInteractor.Callback, QuoteInteractor.Callback,
+        GetCurrencyByIdInteractor.Callback{
 
     private final CurrencyViewModel mViewModel;
     private final View mView;
@@ -90,6 +93,20 @@ public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter 
     }
 
     @Override
+    public void setCurrencyId(String id) {
+        try {
+            mViewModel.currencyId = Integer.valueOf(id);
+        } catch (Exception e) {
+            mViewModel.currencyId = Constants.DEFAULT_WDG;
+        }
+        if (Constants.DEFAULT_WDG.equals(mViewModel.currencyId)) {
+            this.onSuccess((CurrencyNotify) null);
+        } else {
+            findCurrencyByCurrencyId(mViewModel.currencyId);
+        }
+    }
+
+    @Override
     public void saveCurrencyNotify(CurrencyNotify currencyNotify) {
         SaveCurrencyInteractor interactor = new SaveCurrencyInteractorImpl(
                 mExecutor,
@@ -108,12 +125,18 @@ public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter 
 
     @Override
     public void saveCurrencyNotify(String code, String from, String to, BigDecimal min, BigDecimal max) {
-        CurrencyNotify currencyNotify = new CurrencyNotify();
+        CurrencyNotify currencyNotify;
+        if (mViewModel.currencyNotify == null ) {
+            currencyNotify = new CurrencyNotify();
+            currencyNotify.uid = Constants.DEFAULT_WDG.equals(mViewModel.currencyId) ? null : mViewModel.currencyId;
+            currencyNotify.wdgId = Constants.DEFAULT_WDG.equals(mViewModel.widgetId) ? null : mViewModel.widgetId;
+        } else {
+            currencyNotify = mViewModel.currencyNotify;
+        }
         currencyNotify.code = code;
         currencyNotify.label = from+"/"+to;
         currencyNotify.minValueAlert = min;
         currencyNotify.maxValueAlert = max;
-        currencyNotify.wdgId = mViewModel.widgetId;
         currencyNotify.intervalUpdate = Constants.MILLI_INTERVAL;
         currencyNotify.lastPrice = BigDecimal.ZERO;
         currencyNotify.lastPriceChange = BigDecimal.ZERO;
@@ -159,6 +182,17 @@ public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter 
                 this,
                 mDataBase.currencyNotifyRepository(),
                 id);
+        interactor.execute();
+    }
+
+    private void findCurrencyByCurrencyId(Integer currencyId) {
+        mView.showProgress();
+        GetCurrencyByIdInteractor interactor = new GetCurrencyByIdInteractorImpl(
+                mExecutor,
+                mMainThread,
+                this,
+                mDataBase.currencyNotifyRepository(),
+                currencyId);
         interactor.execute();
     }
 
@@ -208,5 +242,16 @@ public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter 
     public void onQuoteFail(String error) {
         mView.hideProgress();
         mView.showError(error);
+    }
+
+    @Override
+    public void onGetByIdSuccess(CurrencyNotify currency) {
+        mView.hideProgress();
+        mViewModel.currencyNotify = currency;
+        if (currency == null) {
+            mView.openSettingsFragment();
+        } else {
+            mView.openDetailsFragment();
+        }
     }
 }

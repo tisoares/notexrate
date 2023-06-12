@@ -24,6 +24,7 @@ public interface CurrencyDetailActivityPresenter extends BasePresenter {
     }
 
     void setWidgetId(String widgetId);
+    void setCurrencyId(String id);
     void saveCurrencyNotify(CurrencyNotify currencyNotify);
     void saveCurrencyNotify(String code, String from, String to, BigDecimal min, BigDecimal max);
     void getCurrencyCode(String from, String to);

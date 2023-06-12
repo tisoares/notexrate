@@ -1,10 +1,13 @@
 package br.com.twoas.notexrate.domain.interactors.impl;
 
+import java.util.ArrayList;
+
 import br.com.twoas.notexrate.domain.executor.Executor;
 import br.com.twoas.notexrate.domain.executor.MainThread;
 import br.com.twoas.notexrate.domain.interactors.GetAllCurrenciesInteractor;
 import br.com.twoas.notexrate.domain.interactors.base.AbstractInteractor;
 import br.com.twoas.notexrate.domain.repository.CurrencyNotifyRepository;
+import timber.log.Timber;
 
 /**
  * Created by tiSoares on 12/06/2023.
@@ -27,6 +30,11 @@ public class GetAllCurrenciesInteractorImpl extends AbstractInteractor implement
 
     @Override
     public void run() {
-        mCallback.onGetAllCurrencies(mRepository.getAll());
+        try {
+            mCallback.onGetAllCurrencies(mRepository.getAll());
+        } catch (Exception e) {
+            Timber.e(e);
+            mCallback.onGetAllCurrencies(new ArrayList<>());
+        }
     }
 }

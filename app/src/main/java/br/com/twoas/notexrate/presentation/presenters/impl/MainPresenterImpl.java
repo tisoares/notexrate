@@ -4,7 +4,9 @@ import java.util.List;
 
 import br.com.twoas.notexrate.domain.executor.Executor;
 import br.com.twoas.notexrate.domain.executor.MainThread;
+import br.com.twoas.notexrate.domain.interactors.DeleteCurrencyInteractor;
 import br.com.twoas.notexrate.domain.interactors.GetAllCurrenciesInteractor;
+import br.com.twoas.notexrate.domain.interactors.impl.DeleteCurrencyInteractorImpl;
 import br.com.twoas.notexrate.domain.interactors.impl.GetAllCurrenciesInteractorImpl;
 import br.com.twoas.notexrate.domain.model.CurrencyNotify;
 import br.com.twoas.notexrate.domain.repository.CurrencyNotifyRepository;
@@ -14,7 +16,8 @@ import br.com.twoas.notexrate.presentation.presenters.base.AbstractForexPresente
 import br.com.twoas.notexrate.presentation.ui.viewmodel.MainViewModel;
 
 
-public class MainPresenterImpl extends AbstractForexPresenter implements MainPresenter, GetAllCurrenciesInteractor.Callback {
+public class MainPresenterImpl extends AbstractForexPresenter implements MainPresenter,
+        GetAllCurrenciesInteractor.Callback, DeleteCurrencyInteractor.Callback {
 
     private final MainPresenter.View mView;
     private final MainViewModel mViewModel;
@@ -67,9 +70,31 @@ public class MainPresenterImpl extends AbstractForexPresenter implements MainPre
     }
 
     @Override
+    public void deleteCurrency(CurrencyNotify currency) {
+        mView.showProgress();
+        new DeleteCurrencyInteractorImpl(mExecutor,
+                mMainThread,
+                this,
+                mRepository,
+                currency).execute();
+    }
+
+    @Override
+    public boolean allowDelete(CurrencyNotify currency) {
+        return currency.wdgId == null;
+    }
+
+    @Override
     public void onGetAllCurrencies(List<CurrencyNotify> currencies) {
         mView.hideProgress();
         mViewModel.currencies = currencies;
         mView.showData();
+    }
+
+    @Override
+    public void onDeleted() {
+        mView.showProgress();
+        mView.onDeleted();
+
     }
 }

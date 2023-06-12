@@ -19,7 +19,7 @@ import java.util.Date;
 })
 public class CurrencyNotify {
     @PrimaryKey(autoGenerate = true)
-    public int uid;
+    public Integer uid;
     @ColumnInfo(name = "code")
     public String code;
     @ColumnInfo(name = "label")
@@ -31,7 +31,7 @@ public class CurrencyNotify {
     @ColumnInfo(name = "max_value_alert")
     public BigDecimal maxValueAlert;
     @ColumnInfo(name = "wdg_id")
-    public int wdgId;
+    public Integer wdgId;
     @ColumnInfo(name = "last_price")
     public BigDecimal lastPrice;
     @ColumnInfo(name = "last_update")

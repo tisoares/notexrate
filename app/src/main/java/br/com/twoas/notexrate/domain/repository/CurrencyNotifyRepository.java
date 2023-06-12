@@ -30,6 +30,9 @@ public interface CurrencyNotifyRepository {
     @Query("SELECT * FROM currency_notify WHERE wdg_id = :wdgId LIMIT 1")
     CurrencyNotify findByWdgId(int wdgId);
 
+    @Query("SELECT * FROM currency_notify WHERE uid = :uid LIMIT 1")
+    CurrencyNotify findById(int uid);
+
     @Query("SELECT code FROM currency_notify")
     List<String> getAllCodes();
 

@@ -1,15 +1,25 @@
 package br.com.twoas.notexrate.presentation.ui.activities;
 
+import android.app.Dialog;
+import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import br.com.twoas.notexrate.Constants;
 import br.com.twoas.notexrate.database.AppDatabase;
 import br.com.twoas.notexrate.databinding.ActivityMainBinding;
 import br.com.twoas.notexrate.domain.executor.impl.ThreadExecutor;
@@ -59,15 +69,56 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         mPresenter.loadData();
     }
 
+
     private void fillRecycleView() {
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                int position = viewHolder.getLayoutPosition();
+                if (mPresenter.allowDelete(mViewModel.currencies.get(position))) {
+                    showConfirmDelete(mViewModel.currencies.get(position));
+                } else {
+                    Toast.makeText(MainActivity.this, "It is linked to a Widget, delete the Widget first.", Toast.LENGTH_SHORT).show();
+                    showData();
+                }
+            }
+        };
         RecyclerView recyclerView = mBinding.listCurrencies;
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new CurrencyAdapter(mViewModel.currencies, this);
         recyclerView.setAdapter(mAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    private void showConfirmDelete(CurrencyNotify currencyNotify) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Delete Currency");
+        builder.setMessage(String.format("Confirm deletion of %s?", currencyNotify.label));
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            dialog.dismiss();
+            mPresenter.deleteCurrency(currencyNotify);
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> {
+            dialog.dismiss();
+            showData();
+        }).create().show();
     }
 
     public void onAddClick(View v) {
-        openCurrencyDetail();
+        openCurrencyDetail(-1);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPresenter.loadData();
     }
 
     @Override
@@ -78,8 +129,10 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
 
     @Override
     public void hideProgress() {
-        mBinding.groupProcess.setVisibility(View.INVISIBLE);
-        mBinding.groupView.setVisibility(View.VISIBLE);
+        this.runOnUiThread(() -> {
+            mBinding.groupProcess.setVisibility(View.INVISIBLE);
+            mBinding.groupView.setVisibility(View.VISIBLE);
+        });
     }
 
     @Override
@@ -89,15 +142,25 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
 
     @Override
     public void showData() {
-        mAdapter.updateData(mViewModel.currencies);
+        this.runOnUiThread(() -> mAdapter.updateData(mViewModel.currencies));
+    }
+
+    @Override
+    public void onDeleted() {
+        mPresenter.loadData();
+        mAlarm.processQuotes(this);
     }
 
     @Override
     public void onItemClick(View view, CurrencyNotify item) {
-        openCurrencyDetail();
+        openCurrencyDetail(item.uid);
     }
 
-    private void openCurrencyDetail() {
-        startActivity(new Intent(this, CurrencyDetailActivity.class));
+    private void openCurrencyDetail(int id) {
+        Intent intent = new Intent(this, CurrencyDetailActivity.class);
+        intent.putExtra(Constants.CURRENCY_IDENTIFIER, ""+id);
+        startActivity(intent);
+        mPresenter.loadData();
     }
+
 }

@@ -9,6 +9,8 @@ import br.com.twoas.notexrate.network.dto.forex.QuoteDTO;
 public class CurrencyViewModel extends ViewModel {
 
     public Integer widgetId = Constants.DEFAULT_WDG;
+
+    public Integer currencyId = Constants.DEFAULT_WDG;
     public CurrencyNotify currencyNotify = null;
 
     public QuoteDTO quote = null;

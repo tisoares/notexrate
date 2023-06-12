@@ -13,9 +13,6 @@ import java.util.Optional;
 
 import br.com.twoas.notexrate.Constants;
 import br.com.twoas.notexrate.R;
-import br.com.twoas.notexrate.database.AppDatabase;
-import br.com.twoas.notexrate.domain.model.CurrencyNotify;
-import br.com.twoas.notexrate.domain.repository.CurrencyNotifyRepository;
 import br.com.twoas.notexrate.presentation.model.WidgetData;
 import br.com.twoas.notexrate.presentation.ui.activities.CurrencyDetailActivity;
 import br.com.twoas.notexrate.receiver.ForexAlarmReceiver;
@@ -63,6 +60,8 @@ public class NotexrateWidget extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        Timber.d("Update+++++++++++++++++");
+        new ForexAlarmReceiver().deleteRemovedWdg(context);
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
@@ -71,18 +70,34 @@ public class NotexrateWidget extends AppWidgetProvider {
 
     @Override
     public void onEnabled(Context context) {
+        Timber.d("Enabled+++++++++++++++++");
         new ForexAlarmReceiver().setAlarm(context);
     }
 
     @Override
-    public void onDisabled(Context context) {
-        new ForexAlarmReceiver().setAlarm(context);
+    public void onDisabled(Context context){
+        Timber.d("Disabled+++++++++++++++++");
+        new ForexAlarmReceiver().cancelAlarm(context);
+    }
+
+    @Override
+    public void onDeleted(Context context, int[] appWidgetIds) {
+        Timber.d("Deleted+++++++++++++++++");
+        super.onDeleted(context, appWidgetIds);
+        new ForexAlarmReceiver().deleteRemovedWdg(context);
+    }
+
+    @Override
+    public void onRestored(Context context, int[] oldWidgetIds, int[] newWidgetIds) {
+        super.onRestored(context, oldWidgetIds, newWidgetIds);
+        Timber.d("Restored+++++++++++++++++");
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Timber.d("Receive+++++++++++++++++");
         if (intent.getAction().startsWith(Constants.CLICK_EVENT)) {
-            openActivity(context, intent.getExtras().getString(Constants.DATA_IDENTIFIER));
+            openActivity(context, intent.getExtras().getString(Constants.WDG_IDENTIFIER));
         }
         if(intent.getStringExtra(Constants.WDG_DATA) != null) {
             try {
@@ -98,7 +113,7 @@ public class NotexrateWidget extends AppWidgetProvider {
     private static PendingIntent getPendingSelfIntent(Context context, String action, String identifier) {
         Intent intent = new Intent(context, NotexrateWidget.class);
         intent.setAction(action);
-        intent.putExtra(Constants.DATA_IDENTIFIER, identifier);
+        intent.putExtra(Constants.WDG_IDENTIFIER, identifier);
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_MUTABLE);
     }
 
@@ -106,7 +121,7 @@ public class NotexrateWidget extends AppWidgetProvider {
         Intent intent = new Intent(context, CurrencyDetailActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.putExtra(Constants.DATA_IDENTIFIER, identifier);
+        intent.putExtra(Constants.WDG_IDENTIFIER, identifier);
         context.startActivity(intent);
     }
 }

@@ -13,7 +13,8 @@ import java.util.UUID;
  */
 public class Constants {
     public static final String DATABASE_NAME = "notexrate-db";
-    public static final String  DATA_IDENTIFIER = "WDG_DATA_IDENTIFIER";
+    public static final String WDG_IDENTIFIER = "WDG_DATA_IDENTIFIER";
+    public static final String CURRENCY_IDENTIFIER = "CURRENCY_DATA_IDENTIFIER";
     public static final String  WDG_DATA = "WDG_DATA_VALUE";
     public static final String CLICK_EVENT = "WDG_CLICK";
     public static final int SECONDS_INTERVAL = 60;
