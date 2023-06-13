@@ -36,10 +36,21 @@ public class CurrencyViewHolder extends RecyclerView.ViewHolder implements View.
         setText(mBinder.price, mItemData.lastPrice);
         setText(mBinder.labelFrom, currencies[0]+" = ");
         setText(mBinder.labelTo, currencies[1]);
-        if (BigDecimal.ZERO.compareTo(mItemData.lastPriceChange) >= 0) {
+        if (!mItemData.isMaxAlarming() && !mItemData.isMinAlarming()) {
+            mBinder.imgAlertItem.setVisibility(View.INVISIBLE);
+        } else {
+            mBinder.imgAlertItem.setVisibility(View.VISIBLE);
+        }
+        if (mItemData.isDown()) {
             mBinder.imgIndicator.setImageResource(R.drawable.ic_arrow_drop_down);
         } else {
             mBinder.imgIndicator.setImageResource(R.drawable.ic_arrow_drop_up);
+        }
+        if (mItemData.isMinAlarming()) {
+            mBinder.imgAlertItem.setImageResource(R.drawable.ic_arrow_drop_down);
+        }
+        if (mItemData.isMaxAlarming()) {
+            mBinder.imgAlertItem.setImageResource(R.drawable.ic_arrow_drop_up);
         }
         setText(mBinder.lblUpdatedAt, Utils.formatDate(mItemData.lastUpdate));
         setText(mBinder.priceChange, mItemData.lastPriceChange);

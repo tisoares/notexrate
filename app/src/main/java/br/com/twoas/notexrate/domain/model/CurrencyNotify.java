@@ -38,4 +38,21 @@ public class CurrencyNotify {
     public Date lastUpdate;
     @ColumnInfo(name = "last_price_change")
     public BigDecimal lastPriceChange;
+
+
+    public boolean isMinAlarming() {
+        return this.minValueAlert != null
+                && BigDecimal.ZERO.compareTo(this.minValueAlert) != 0
+                && this.lastPrice.compareTo(this.minValueAlert) <= 0;
+    }
+
+    public boolean isMaxAlarming() {
+        return this.maxValueAlert != null
+                && BigDecimal.ZERO.compareTo(this.maxValueAlert) != 0
+                && this.lastPrice.compareTo(this.maxValueAlert) >= 0;
+    }
+
+    public boolean isDown(){
+        return BigDecimal.ZERO.compareTo(this.lastPriceChange) >= 0;
+    }
 }

@@ -49,7 +49,7 @@ public class NotificationHelper {
 
         // Build the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle(getTitle(data))
                 .setContentText(getContentText(data))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)

@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import java.io.IOException;
@@ -38,7 +39,20 @@ public class NotexrateWidget extends AppWidgetProvider {
             } else {
                 views.setImageViewResource(R.id.indicator, R.drawable.ic_arrow_drop_up);
             }
+
+            if (!wdg.get().isMinAlarming() && !wdg.get().isMaxAlarming()) {
+                views.setViewVisibility(R.id.imgAlert, View.INVISIBLE);
+            } else {
+                views.setViewVisibility(R.id.imgAlert, View.VISIBLE);
+            }
+            if (wdg.get().isMinAlarming()) {
+                views.setImageViewResource(R.id.imgAlert, R.drawable.ic_arrow_drop_down);
+            }
+            if (wdg.get().isMaxAlarming()) {
+                views.setImageViewResource(R.id.imgAlert, R.drawable.ic_arrow_drop_up);
+            }
         } else {
+            views.setViewVisibility(R.id.imgAlert, View.INVISIBLE);
             views.setTextViewText(R.id.amount, "0.00000");
             views.setTextViewText(R.id.currency, "UNDEFINED");
         }

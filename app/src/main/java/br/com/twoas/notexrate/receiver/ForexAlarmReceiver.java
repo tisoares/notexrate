@@ -110,22 +110,11 @@ public class ForexAlarmReceiver extends BroadcastReceiver {
                 currency.wdgId,
                 currency.label,
                 currency.lastPrice,
-                BigDecimal.ZERO.compareTo(currency.lastPriceChange) >= 0,
-                isMinAlarming(currency),
-                isMaxAlarming(currency));
+                currency.isDown(),
+                currency.isMinAlarming(),
+                currency.isMaxAlarming());
     }
 
-    private static boolean isMinAlarming(CurrencyNotify currency) {
-        return currency.minValueAlert != null
-                && BigDecimal.ZERO.compareTo(currency.minValueAlert) != 0
-                && currency.lastPrice.compareTo(currency.minValueAlert) <= 0;
-    }
-
-    private static boolean isMaxAlarming(CurrencyNotify currency) {
-        return currency.maxValueAlert != null
-                && BigDecimal.ZERO.compareTo(currency.maxValueAlert) != 0
-                && currency.lastPrice.compareTo(currency.maxValueAlert) >= 0;
-    }
 
     public void deleteRemovedWdg(Context context) {
         new DeleteWidgetRemovedInteractorImpl(ThreadExecutor.getInstance(),

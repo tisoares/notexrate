@@ -14,7 +14,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Objects;
 
 import br.com.twoas.notexrate.R;
 import br.com.twoas.notexrate.databinding.FragmentCurrencyDetailBinding;
@@ -95,6 +94,24 @@ public class CurrencyDetailFragment extends Fragment {
             mBinding.lblLastClose.setText(Utils.formatDate(quote.getDatePreviousClose()));
             mBinding.lblLastUpdate.setText(Utils.formatDate(quote.getTimeLastUpdated()));
             if (mViewModel.currencyNotify != null) {
+                mViewModel.currencyNotify.lastPrice = quote.getPrice();
+                mViewModel.currencyNotify.lastPriceChange = quote.getPriceChange();
+                mViewModel.currencyNotify.lastUpdate = quote.getTimeLastUpdated();
+                if (!mViewModel.currencyNotify.isMaxAlarming() && !mViewModel.currencyNotify.isMinAlarming()) {
+                    mBinding.imgAlertDetail.setVisibility(View.INVISIBLE);
+                } else {
+                    mBinding.imgAlertDetail.setVisibility(View.VISIBLE);
+                }
+                mBinding.lblMaxAlarm.setTextColor(mBinding.textView26.getCurrentTextColor());
+                mBinding.lblMinAlarm.setTextColor(mBinding.textView26.getCurrentTextColor());
+                if (mViewModel.currencyNotify.isMinAlarming()) {
+                    mBinding.imgAlertDetail.setImageResource(R.drawable.ic_arrow_drop_down);
+                    mBinding.lblMinAlarm.setTextColor(ContextCompat.getColor(requireContext(),R.color.green));
+                }
+                if (mViewModel.currencyNotify.isMaxAlarming()) {
+                    mBinding.imgAlertDetail.setImageResource(R.drawable.ic_arrow_drop_up);
+                    mBinding.lblMaxAlarm.setTextColor(ContextCompat.getColor(requireContext(),R.color.red));
+                }
                 mBinding.lblMinAlarm.setText(Utils.bigDecimalToString(mViewModel.currencyNotify.minValueAlert));
                 mBinding.lblMaxAlarm.setText(Utils.bigDecimalToString(mViewModel.currencyNotify.maxValueAlert));
             }
