@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import br.com.twoas.notexrate.helper.ForexHelper;
+
 /**
  * Broadcast to start services
  * <p>
@@ -13,10 +15,10 @@ import android.content.Intent;
  */
 public class BootReceiver extends BroadcastReceiver {
 
-    private ForexAlarmReceiver alarm = new ForexAlarmReceiver();
-
     @Override
     public void onReceive(Context context, Intent intent) {
-        alarm.setAlarm(context);
+        if(intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
+            ForexHelper.getInstance().setAlarm(context);
+        }
     }
 }

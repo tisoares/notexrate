@@ -19,12 +19,12 @@ import br.com.twoas.notexrate.domain.model.CurrencyNotify;
 import br.com.twoas.notexrate.network.RestClient;
 import br.com.twoas.notexrate.network.services.GetConfigDataService;
 import br.com.twoas.notexrate.network.services.GetForexDataService;
+import br.com.twoas.notexrate.helper.ForexHelper;
 import br.com.twoas.notexrate.presentation.presenters.CurrencyDetailActivityPresenter;
 import br.com.twoas.notexrate.presentation.presenters.impl.CurrencyDetailActivityPresenterImpl;
 import br.com.twoas.notexrate.presentation.ui.fragment.CurrencyDetailFragment;
 import br.com.twoas.notexrate.presentation.ui.fragment.SettingsWidgetFragment;
 import br.com.twoas.notexrate.presentation.ui.viewmodel.CurrencyViewModel;
-import br.com.twoas.notexrate.receiver.ForexAlarmReceiver;
 import br.com.twoas.notexrate.threading.MainThreadImpl;
 
 public class CurrencyDetailActivity extends AppCompatActivity implements CurrencyDetailActivityPresenter.View,
@@ -34,7 +34,7 @@ public class CurrencyDetailActivity extends AppCompatActivity implements Currenc
     private CurrencyDetailActivityPresenter mPresenter;
     private Fragment mCurrentFragment;
     private ActivityCurrencyDetailBinding mBinding;
-    private ForexAlarmReceiver mAlarme;
+    private ForexHelper mForex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,7 @@ public class CurrencyDetailActivity extends AppCompatActivity implements Currenc
         mBinding = ActivityCurrencyDetailBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
         mViewModel = new ViewModelProvider(this).get(CurrencyViewModel.class);
-        mAlarme = new ForexAlarmReceiver();
+        mForex = ForexHelper.getInstance();
         mPresenter = new CurrencyDetailActivityPresenterImpl(ThreadExecutor.getInstance(),
                 MainThreadImpl.getInstance(), RestClient.getService(GetConfigDataService.class), this, mViewModel,
                 AppDatabase.getAppDatabase(this.getApplicationContext()),
@@ -109,7 +109,7 @@ public class CurrencyDetailActivity extends AppCompatActivity implements Currenc
 
     @Override
     public void saved(List<CurrencyNotify> currencyNotifies) {
-        mAlarme.processQuotes(this);
+        mForex.processQuotes(this);
         if (!currencyNotifies.isEmpty()) {
             mViewModel.currencyNotify = currencyNotifies.get(0);
             openDetailsFragment();
@@ -150,7 +150,7 @@ public class CurrencyDetailActivity extends AppCompatActivity implements Currenc
 
     @Override
     public void onRefresh() {
-        mAlarme.processQuotes(this);
+        mForex.processQuotes(this);
         mPresenter.refreshQuote();
     }
 

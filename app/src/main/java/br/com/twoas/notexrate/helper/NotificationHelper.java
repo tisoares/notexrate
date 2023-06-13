@@ -1,4 +1,4 @@
-package br.com.twoas.notexrate.presentation.ui;
+package br.com.twoas.notexrate.helper;
 
 import android.app.ActivityManager;
 import android.app.NotificationChannel;

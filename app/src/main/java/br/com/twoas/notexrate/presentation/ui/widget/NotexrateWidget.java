@@ -14,9 +14,9 @@ import java.util.Optional;
 
 import br.com.twoas.notexrate.Constants;
 import br.com.twoas.notexrate.R;
+import br.com.twoas.notexrate.helper.ForexHelper;
 import br.com.twoas.notexrate.presentation.model.WidgetData;
 import br.com.twoas.notexrate.presentation.ui.activities.CurrencyDetailActivity;
-import br.com.twoas.notexrate.receiver.ForexAlarmReceiver;
 import br.com.twoas.notexrate.utils.JsonUtils;
 import timber.log.Timber;
 
@@ -75,7 +75,7 @@ public class NotexrateWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Timber.d("Update+++++++++++++++++");
-        new ForexAlarmReceiver().deleteRemovedWdg(context);
+        ForexHelper.getInstance().deleteRemovedWdg(context);
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
@@ -85,20 +85,20 @@ public class NotexrateWidget extends AppWidgetProvider {
     @Override
     public void onEnabled(Context context) {
         Timber.d("Enabled+++++++++++++++++");
-        new ForexAlarmReceiver().setAlarm(context);
+        ForexHelper.getInstance().setAlarm(context);
     }
 
     @Override
     public void onDisabled(Context context){
         Timber.d("Disabled+++++++++++++++++");
-        new ForexAlarmReceiver().cancelAlarm(context);
+        ForexHelper.getInstance().cancelAlarm(context);
     }
 
     @Override
     public void onDeleted(Context context, int[] appWidgetIds) {
         Timber.d("Deleted+++++++++++++++++");
         super.onDeleted(context, appWidgetIds);
-        new ForexAlarmReceiver().deleteRemovedWdg(context);
+        ForexHelper.getInstance().deleteRemovedWdg(context);
     }
 
     @Override

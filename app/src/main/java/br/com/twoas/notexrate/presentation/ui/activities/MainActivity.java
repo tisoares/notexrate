@@ -1,17 +1,10 @@
 package br.com.twoas.notexrate.presentation.ui.activities;
 
-import android.app.Dialog;
-import android.app.ListActivity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -26,11 +19,11 @@ import br.com.twoas.notexrate.domain.executor.impl.ThreadExecutor;
 import br.com.twoas.notexrate.domain.model.CurrencyNotify;
 import br.com.twoas.notexrate.network.RestClient;
 import br.com.twoas.notexrate.network.services.GetConfigDataService;
+import br.com.twoas.notexrate.helper.ForexHelper;
 import br.com.twoas.notexrate.presentation.presenters.MainPresenter;
 import br.com.twoas.notexrate.presentation.presenters.impl.MainPresenterImpl;
 import br.com.twoas.notexrate.presentation.ui.recycleview.adapter.CurrencyAdapter;
 import br.com.twoas.notexrate.presentation.ui.viewmodel.MainViewModel;
-import br.com.twoas.notexrate.receiver.ForexAlarmReceiver;
 import br.com.twoas.notexrate.threading.MainThreadImpl;
 
 public class MainActivity extends AppCompatActivity implements MainPresenter.View, CurrencyAdapter.ItemClickListener {
@@ -38,13 +31,13 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     private MainViewModel mViewModel;
     private ActivityMainBinding mBinding;
     private MainPresenter mPresenter;
-    private ForexAlarmReceiver mAlarm;
+    private ForexHelper mForex;
     private CurrencyAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAlarm = new ForexAlarmReceiver();
+        mForex = ForexHelper.getInstance();
         mBinding = ActivityMainBinding.inflate(getLayoutInflater());
         View view = mBinding.getRoot();
         setContentView(view);
@@ -59,10 +52,10 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
                 AppDatabase.getAppDatabase(this).currencyNotifyRepository());
 
         fillRecycleView();
-        mAlarm.updateWidget(this);
-        mAlarm.cancelAlarm(this);
-        mAlarm.setAlarm(this);
-        mAlarm.processQuotes(this);
+        mForex.updateWidget(this);
+        mForex.cancelAlarm(this);
+        mForex.setAlarm(this);
+        mForex.processQuotes(this);
 
         mBinding.btnAdd.setOnClickListener(this::onAddClick);
 
@@ -148,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     @Override
     public void onDeleted() {
         mPresenter.loadData();
-        mAlarm.processQuotes(this);
+        mForex.processQuotes(this);
     }
 
     @Override
