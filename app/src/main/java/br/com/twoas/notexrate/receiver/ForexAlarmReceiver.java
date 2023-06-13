@@ -1,18 +1,24 @@
 package br.com.twoas.notexrate.receiver;
 
 import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+
+import androidx.core.app.NotificationCompat;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import br.com.twoas.notexrate.Constants;
+import br.com.twoas.notexrate.R;
 import br.com.twoas.notexrate.database.AppDatabase;
 import br.com.twoas.notexrate.domain.executor.impl.ThreadExecutor;
 import br.com.twoas.notexrate.domain.interactors.impl.DeleteWidgetRemovedInteractorImpl;
@@ -22,9 +28,12 @@ import br.com.twoas.notexrate.network.RestClient;
 import br.com.twoas.notexrate.network.services.GetConfigDataService;
 import br.com.twoas.notexrate.network.services.GetForexDataService;
 import br.com.twoas.notexrate.presentation.model.WidgetData;
+import br.com.twoas.notexrate.presentation.ui.NotificationHelper;
+import br.com.twoas.notexrate.presentation.ui.activities.CurrencyDetailActivity;
 import br.com.twoas.notexrate.presentation.ui.widget.NotexrateWidget;
 import br.com.twoas.notexrate.threading.MainThreadImpl;
 import br.com.twoas.notexrate.utils.JsonUtils;
+import br.com.twoas.notexrate.utils.Utils;
 
 public class ForexAlarmReceiver extends BroadcastReceiver {
 
@@ -81,7 +90,9 @@ public class ForexAlarmReceiver extends BroadcastReceiver {
                 RestClient.getService(GetConfigDataService.class),
                 currencyNotifies -> {
                     if (!currencyNotifies.isEmpty()) {
-                        updateWidget(context, convertToWidgetData(currencyNotifies));
+                        List<WidgetData> data = convertToWidgetData(currencyNotifies);
+                        updateWidget(context, data);
+                        new NotificationHelper().processNotifications(context, data);
                     }
                 },
                 AppDatabase.getAppDatabase(context).currencyNotifyRepository(),
@@ -95,11 +106,25 @@ public class ForexAlarmReceiver extends BroadcastReceiver {
     }
 
     private WidgetData convertToWidgetData(CurrencyNotify currency) {
-        return new WidgetData(currency.wdgId,
+        return new WidgetData( currency.uid,
+                currency.wdgId,
                 currency.label,
                 currency.lastPrice,
                 BigDecimal.ZERO.compareTo(currency.lastPriceChange) >= 0,
-                false); // TODO: Sinalize alert
+                isMinAlarming(currency),
+                isMaxAlarming(currency));
+    }
+
+    private static boolean isMinAlarming(CurrencyNotify currency) {
+        return currency.minValueAlert != null
+                && BigDecimal.ZERO.compareTo(currency.minValueAlert) != 0
+                && currency.lastPrice.compareTo(currency.minValueAlert) <= 0;
+    }
+
+    private static boolean isMaxAlarming(CurrencyNotify currency) {
+        return currency.maxValueAlert != null
+                && BigDecimal.ZERO.compareTo(currency.maxValueAlert) != 0
+                && currency.lastPrice.compareTo(currency.maxValueAlert) >= 0;
     }
 
     public void deleteRemovedWdg(Context context) {
@@ -110,4 +135,5 @@ public class ForexAlarmReceiver extends BroadcastReceiver {
                 getWidgetIds(context)
                 ).execute();
     }
+
 }

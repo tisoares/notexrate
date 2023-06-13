@@ -10,18 +10,23 @@ import java.math.BigDecimal;
  */
 public class WidgetData implements Serializable {
 
+    private Integer uid;
     private Integer wdgId;
     private String label;
     private BigDecimal price;
     private boolean down;
-    private boolean alarming;
+    private boolean minAlarming;
+    private boolean maxAlarming;
 
-    public WidgetData(Integer wdgId, String label, BigDecimal price, boolean down, boolean alarming) {
+    public WidgetData(Integer uid, Integer wdgId, String label, BigDecimal price, boolean down,
+                      boolean minAlarming, boolean maxAlarming) {
+        this.uid = uid;
         this.wdgId = wdgId;
         this.label = label;
         this.price = price;
         this.down = down;
-        this.alarming = alarming;
+        this.minAlarming = minAlarming;
+        this.maxAlarming = maxAlarming;
     }
 
     // GETTERS && SETTERS
@@ -58,12 +63,27 @@ public class WidgetData implements Serializable {
         this.down = down;
     }
 
-    public boolean isAlarming() {
-        return alarming;
+    public boolean isMinAlarming() {
+        return minAlarming;
     }
 
-    public void setAlarming(boolean alarming) {
-        this.alarming = alarming;
+    public void setMinAlarming(boolean alarming) {
+        this.minAlarming = alarming;
     }
 
+    public boolean isMaxAlarming() {
+        return maxAlarming;
+    }
+
+    public void setMaxAlarming(boolean maxAlarming) {
+        this.maxAlarming = maxAlarming;
+    }
+
+    public Integer getUid() {
+        return uid;
+    }
+
+    public void setUid(Integer uid) {
+        this.uid = uid;
+    }
 }
