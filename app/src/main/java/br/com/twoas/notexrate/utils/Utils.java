@@ -24,6 +24,6 @@ public class Utils {
         if (date == null) {
             return "";
         }
-        return Constants.COMPETE_DATE_FORMATER.format(date);
+        return Constants.COMPETE_DATE_FORMATTER.format(date);
     }
 }

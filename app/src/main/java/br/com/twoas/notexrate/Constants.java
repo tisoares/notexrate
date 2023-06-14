@@ -22,8 +22,8 @@ public class Constants {
     public static final String ACTIVITY_ID = UUID.randomUUID().toString();
     public static final Integer DEFAULT_WDG = -1;
 
-    public static final String DATE_COMPLETE_FORMAT = "EEEE dd MMMM yyyy HH:mm.SSS O";
+    public static final String DATE_COMPLETE_FORMAT = "EEE dd MMMM yyyy HH:mm.SSS O";
     @SuppressLint("ConstantLocale")
-    public static final SimpleDateFormat COMPETE_DATE_FORMATER = new SimpleDateFormat(DATE_COMPLETE_FORMAT, Locale.getDefault());
+    public static final SimpleDateFormat COMPETE_DATE_FORMATTER = new SimpleDateFormat(DATE_COMPLETE_FORMAT, Locale.getDefault());
     private Constants () {}
 }

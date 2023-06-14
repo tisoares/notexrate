@@ -6,6 +6,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
@@ -49,16 +51,27 @@ public class NotificationHelper {
 
         // Build the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(getTitle(data))
                 .setContentText(getContentText(data))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(getIntent(context, data.getUid()))
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setLargeIcon(getImage(context, data))
                 .setAutoCancel(true); // Remove the notification when the user taps on it
 
         // Show the notification
         notificationManager.notify(data.getUid(), builder.build());
+    }
+
+    private Bitmap getImage(Context context, WidgetData data) {
+        if (data.isMaxAlarming()) {
+            return BitmapFactory.decodeResource(context.getResources(),
+                    R.drawable.ic_arrow_drop_up);
+        } else {
+            return BitmapFactory.decodeResource(context.getResources(),
+                    R.drawable.ic_arrow_drop_down);
+        }
     }
 
     private String getAlertType(WidgetData data) {
