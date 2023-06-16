@@ -42,7 +42,9 @@ android {
         viewBinding true
     }
 }
-
+repositories {
+    maven { url 'https://jitpack.io' }
+}
 dependencies {
 
     // General
@@ -71,6 +73,9 @@ dependencies {
 
     //Timber
     implementation 'com.jakewharton.timber:timber:5.0.1'
+
+    // Chart
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
     // TESTS
     testImplementation 'junit:junit:4.13.2'

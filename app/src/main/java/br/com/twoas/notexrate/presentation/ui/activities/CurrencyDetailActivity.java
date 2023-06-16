@@ -17,6 +17,7 @@ import br.com.twoas.notexrate.databinding.ActivityCurrencyDetailBinding;
 import br.com.twoas.notexrate.domain.executor.impl.ThreadExecutor;
 import br.com.twoas.notexrate.domain.model.CurrencyNotify;
 import br.com.twoas.notexrate.network.RestClient;
+import br.com.twoas.notexrate.network.dto.forex.ChartDataDTO;
 import br.com.twoas.notexrate.network.services.GetConfigDataService;
 import br.com.twoas.notexrate.network.services.GetForexDataService;
 import br.com.twoas.notexrate.helper.ForexHelper;
@@ -120,6 +121,13 @@ public class CurrencyDetailActivity extends AppCompatActivity implements Currenc
     public void loadQuote() {
         if (isDetailFragment()) {
             ((CurrencyDetailFragment) mCurrentFragment).loadData();
+        }
+    }
+
+    @Override
+    public void loadChart(ChartDataDTO chartData) {
+        if (isDetailFragment()) {
+            ((CurrencyDetailFragment) mCurrentFragment).setChartData(chartData);
         }
     }
 

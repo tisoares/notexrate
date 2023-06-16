@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import br.com.twoas.notexrate.domain.model.CurrencyNotify;
+import br.com.twoas.notexrate.network.dto.forex.ChartDataDTO;
 import br.com.twoas.notexrate.presentation.presenters.base.BasePresenter;
 import br.com.twoas.notexrate.presentation.ui.BaseView;
 
@@ -21,6 +22,7 @@ public interface CurrencyDetailActivityPresenter extends BasePresenter {
         void wrongCurrency();
         void saved(List<CurrencyNotify> currencyNotifies);
         void loadQuote();
+        void loadChart(ChartDataDTO chartData);
     }
 
     void setWidgetId(String widgetId);

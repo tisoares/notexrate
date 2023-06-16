@@ -12,16 +12,20 @@ import br.com.twoas.notexrate.database.AppDatabase;
 import br.com.twoas.notexrate.domain.executor.Executor;
 import br.com.twoas.notexrate.domain.executor.MainThread;
 import br.com.twoas.notexrate.domain.interactors.CurrencyMapInteractor;
+import br.com.twoas.notexrate.domain.interactors.GetChartDataInteractor;
 import br.com.twoas.notexrate.domain.interactors.GetCurrencyByIdInteractor;
 import br.com.twoas.notexrate.domain.interactors.GetCurrencyByWdgIdInteractor;
 import br.com.twoas.notexrate.domain.interactors.QuoteInteractor;
 import br.com.twoas.notexrate.domain.interactors.SaveCurrencyInteractor;
 import br.com.twoas.notexrate.domain.interactors.impl.CurrencyMapInteractorImpl;
+import br.com.twoas.notexrate.domain.interactors.impl.GetChartDataInteractorImpl;
 import br.com.twoas.notexrate.domain.interactors.impl.GetCurrencyByIdInteractorImpl;
 import br.com.twoas.notexrate.domain.interactors.impl.GetCurrencyByWdgIdInteractorImpl;
 import br.com.twoas.notexrate.domain.interactors.impl.QuoteInteractorImpl;
 import br.com.twoas.notexrate.domain.interactors.impl.SaveCurrencyInteractorImpl;
 import br.com.twoas.notexrate.domain.model.CurrencyNotify;
+import br.com.twoas.notexrate.network.dto.forex.ChartDataDTO;
+import br.com.twoas.notexrate.network.dto.forex.ChartPeriod;
 import br.com.twoas.notexrate.network.dto.forex.IdMapDTO;
 import br.com.twoas.notexrate.network.dto.forex.QuoteDTO;
 import br.com.twoas.notexrate.network.services.GetConfigDataService;
@@ -37,7 +41,7 @@ import br.com.twoas.notexrate.presentation.ui.viewmodel.CurrencyViewModel;
  */
 public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter implements CurrencyDetailActivityPresenter,
         GetCurrencyByWdgIdInteractor.Callback, CurrencyMapInteractor.Callback, QuoteInteractor.Callback,
-        GetCurrencyByIdInteractor.Callback{
+        GetCurrencyByIdInteractor.Callback, GetChartDataInteractor.Callback{
 
     private final CurrencyViewModel mViewModel;
     private final View mView;
@@ -167,6 +171,17 @@ public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter 
                 mServiceForex,
                 Collections.singletonList(mViewModel.currencyNotify.code))
                 .execute();
+        refreshChartData();
+    }
+
+    private void refreshChartData() {
+        new GetChartDataInteractorImpl(mExecutor,
+                mMainThread,
+                mConfigService,
+                this,
+                mServiceForex,
+                ChartPeriod.DAY,
+                mViewModel.currencyNotify.code).execute();
     }
 
     @Override
@@ -253,5 +268,17 @@ public class CurrencyDetailActivityPresenterImpl extends AbstractForexPresenter 
         } else {
             mView.openDetailsFragment();
         }
+    }
+
+    @Override
+    public void onSuccess(ChartDataDTO chartData) {
+        mView.hideProgress();
+        mView.loadChart(chartData);
+    }
+
+    @Override
+    public void onFailure(String error) {
+        mView.hideProgress();
+        mView.showError(error);
     }
 }
